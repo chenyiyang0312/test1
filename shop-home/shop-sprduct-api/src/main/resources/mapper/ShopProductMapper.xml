@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fh.dao.ShopProductDao">
+
+
+    <sql id="queryProductParamter">
+        <where>
+            and tp.status = 1
+            <if test="parameter.cateId !=null">
+                and tt.categroyId = #{parameter.cateId}
+            </if>
+
+
+            <if test="parameter.brandId !=null">
+                and tp.brandId = #{parameter.brandId}
+            </if>
+        </where>
+    </sql>
+
+
+
+
+
+<select id="queryShopProductCount" resultType="long">
+    select count(DISTINCT tp.id)
+        FROM t_shop_product tp
+        LEFT JOIN t_shop_product_type tt
+        on tp.id = tt.productId
+        <include refid="queryProductParamter"></include>
+</select>
+
+    <select id="queryProductList"  resultType="com.fh.bean.ShopProductBean">
+     select DISTINCT tp.id,tp.name,tp.subtitle,tp.mainImg,tp.price,tp.stock
+        FROM t_shop_product tp
+        LEFT JOIN t_shop_product_type tt
+        on tp.id = tt.productId
+        <include refid="queryProductParamter"></include>
+      limit #{page.start},#{page.length}
+    </select>
+
+    <select id="getProductById" resultType="com.fh.bean.ShopProductBean" parameterType="int">
+        select * from t_shop_product where id = #{id}
+    </select>
+</mapper>
